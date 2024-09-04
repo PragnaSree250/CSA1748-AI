@@ -1,0 +1,37 @@
+from collections import deque
+
+def is_goal_state(x, y, c):
+    return x == c or y == c
+
+def bfs_jug_problem(a, b, c):
+    visited = set()
+    queue = deque([(0, 0)])  
+    visited.add((0, 0))
+
+    while queue:
+        x, y = queue.popleft()
+
+        
+        if is_goal_state(x, y, c):
+            print(f"Solution found: Jug1 = {x} liters, Jug2 = {y} liters")
+            return
+        next_states = [
+            (a, y),     
+            (x, b),    
+            (0, y),    
+            (x, 0),     
+            (min(x + y, a), max(0, y - (a - x))),  
+            (max(0, x - (b - y)), min(x + y, b))   
+        ]
+
+        for state in next_states:
+            if state not in visited:
+                queue.append(state)
+                visited.add(state)
+
+    print("No solution exists")
+
+a=int(input("enter the 1st jug capacity:"));
+b=int(input("enter the 1st jug capacity:"));
+c=int(input("enter the  target amount:"));
+bfs_jug_problem(a, b, c)
