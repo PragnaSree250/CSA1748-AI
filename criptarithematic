@@ -1,0 +1,33 @@
+from itertools import permutations
+
+def solve_cryptarithmetic(words, result):
+
+    letters = set("".join(words) + result)
+    if len(letters) > 10:
+        return "Too many letters for unique digit assignment"
+    first_letters = set(word[0] for word in words) | {result[0]}
+    for perm in permutations("0123456789", len(letters)):
+        assignment = dict(zip(letters, perm))
+        if any(assignment[letter] == '0' for letter in first_letters):
+            continue
+        def word_to_number(word):
+            return int("".join(assignment[letter] for letter in word))
+        if sum(word_to_number(word) for word in words) == word_to_number(result):
+            return assignment
+    return "No solution exists"
+
+def get_words_input():
+    words_input = input("Enter words separated by spaces: ").upper()
+    words = words_input.split()
+    return words
+user_words = get_words_input()
+print("\nThe words you entered are:")
+print(user_words)
+result = input("Enter the result word: ").upper()
+solution = solve_cryptarithmetic(user_words, result)
+if isinstance(solution, dict):
+    print("\nSolution found:")
+    for letter, digit in solution.items():
+        print(f"{letter} = {digit}")
+else:
+    print(solution)
