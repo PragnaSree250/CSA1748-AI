@@ -1,0 +1,80 @@
+from collections import deque
+
+def is_goal_state(state, goal_state):
+    return state == goal_state
+
+def find_blank_space(state):
+    return state.index(0)  
+
+def swap(state, i, j):
+    new_state = state[:]
+    new_state[i], new_state[j] = new_state[j], new_state[i]
+    return new_state
+
+def get_possible_moves(state):
+    blank_pos = find_blank_space(state)
+    row, col = blank_pos // 3, blank_pos % 3
+    moves = []
+
+    if row > 0: 
+        moves.append(swap(state, blank_pos, blank_pos - 3))
+    if row < 2: 
+        moves.append(swap(state, blank_pos, blank_pos + 3))
+    if col > 0: 
+        moves.append(swap(state, blank_pos, blank_pos - 1))
+    if col < 2:  
+        moves.append(swap(state, blank_pos, blank_pos + 1))
+
+    return moves
+
+def bfs_8_puzzle(initial_state, goal_state):
+    queue = deque([(initial_state, [])])  
+    visited = set() 
+    visited.add(tuple(initial_state))
+
+    while queue:
+        state, path = queue.popleft()
+
+        # Step 4: Apply Moves and Check for the Goal State
+        if is_goal_state(state, goal_state):
+            return path + [state]
+
+        # Step 3: Generate Possible Moves
+        for next_state in get_possible_moves(state):
+            if tuple(next_state) not in visited:
+                visited.add(tuple(next_state))
+                queue.append((next_state, path + [state]))
+
+    return None  
+
+
+def get_puzzle_matrix(prompt):
+    print(prompt)
+    matrix = []
+    for i in range(3):
+        row = []
+        for j in range(3):
+            value = int(input(f"Enter value for position ({i}, {j}) (0-8): "))
+            row.append(value)
+        matrix.append(row)
+    return matrix
+print("Enter the initial state of the puzzle (use 0 for the empty space):")
+initial_state = get_puzzle_matrix("Initial State:")
+print("Enter the goal state of the puzzle (use 0 for the empty space):")
+goal_state = get_puzzle_matrix("Goal State:")
+
+print("Initial State:")
+for row in initial_state:
+    print(row)
+
+print("Goal State:")
+for row in goal_state:
+    print(row)
+solution_path = bfs_8_puzzle(initial_state, goal_state)
+
+if solution_path:
+    print("Solution found:")
+    for step in solution_path:
+        print(step)
+else:
+    print("No solution exists")
