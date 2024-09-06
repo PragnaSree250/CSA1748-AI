@@ -1,0 +1,81 @@
+class VacuumCleaner:
+    def __init__(self, grid, start_pos):
+        self.grid = grid
+        self.pos = start_pos
+        self.rows = len(grid)
+        self.cols = len(grid[0])
+
+    def move_up(self):
+        if self.pos[0] > 0:
+            self.pos[0] -= 1
+
+    def move_down(self):
+        if self.pos[0] < self.rows - 1:
+            self.pos[0] += 1
+
+    def move_left(self):
+        if self.pos[1] > 0:
+            self.pos[1] -= 1
+
+    def move_right(self):
+        if self.pos[1] < self.cols - 1:
+            self.pos[1] += 1
+
+    def clean(self):
+        """Change the current position to 1, simulating 'cleaning' as filling with 1."""
+        self.grid[self.pos[0]][self.pos[1]] = 1  
+
+    def apply_action(self, action):
+        if action == 'UP':
+            self.move_up()
+        elif action == 'DOWN':
+            self.move_down()
+        elif action == 'LEFT':
+            self.move_left()
+        elif action == 'RIGHT':
+            self.move_right()
+        elif action == 'CLEAN':
+            self.clean()
+
+    def is_goal_state(self):
+        """Check if all cells in the grid are filled with 1s."""
+        return all(all(cell == 1 for cell in row) for row in self.grid)
+
+    def clean_all(self):
+        """Attempt to fill the entire grid with 1s."""
+        actions = ['CLEAN', 'RIGHT', 'DOWN', 'LEFT', 'UP']
+        while not self.is_goal_state():
+            for action in actions:
+                self.apply_action(action)
+                if self.is_goal_state():
+                    break
+
+def get_grid_input(rows, cols):
+    grid = []
+    print(f"Enter the grid values row by row, separated by spaces:")
+    for i in range(rows):
+        while True:
+            try:
+                row = list(map(int, input(f"Row {i+1}: ").split()))
+                if len(row) != cols or not all(val in [0, 1] for val in row):
+                    raise ValueError
+                grid.append(row)
+                break
+            except ValueError:
+                print(f"Please enter {cols} integers (0 or 1) separated by spaces.")
+    return grid
+
+rows, cols = 3, 3
+user_grid = get_grid_input(rows, cols)
+print("\nThe grid you entered is:")
+for row in user_grid:
+    print(row)
+
+start_pos = [0, 0]
+
+vacuum = VacuumCleaner(user_grid, start_pos)
+vacuum.clean_all()
+
+print("\nFinal grid state:")
+for row in vacuum.grid:
+    print(row)
